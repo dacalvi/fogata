@@ -1,2 +1,2 @@
 # fogata
-Codeigniter with HMVC, GroceryCrud, Bootstwach and AdminLTE
+Codeigniter with HMVC, GroceryCrud, Bootstwach and AdminLTE.
