@@ -5,30 +5,24 @@
  * @property Ion_auth|Ion_auth_model $ion_auth        The ION Auth spark
  * @property CI_Form_validation      $form_validation The form validation library
  */
-class Auth extends FrontendController
-{
-	public function __construct()
-	{
+class Auth extends CommonController{
+	public function __construct(){
 		parent::__construct();
 		$this->load->database();
 		$this->load->library(array('ion_auth', 'form_validation'));
 		$this->load->helper(array('url', 'language'));
-
 		$this->form_validation->set_error_delimiters($this->config->item('error_start_delimiter', 'ion_auth'), $this->config->item('error_end_delimiter', 'ion_auth'));
-
 		$this->lang->load('auth');
 	}
 
 	/**
 	 * Redirect if needed, otherwise display the user list
 	 */
-	public function index()
-	{
+	public function index(){
 
-		if (!$this->ion_auth->logged_in())
-		{
+		if (!$this->ion_auth->logged_in()){
 			// redirect them to the login page
-			redirect('auth/login', 'refresh');
+			redirect('dashboard/auth/login', 'refresh');
 		}
 		else if (!$this->ion_auth->is_admin()) // remove this elseif if you want to enable this for non-admins
 		{
@@ -47,15 +41,14 @@ class Auth extends FrontendController
 				$this->data['users'][$k]->groups = $this->ion_auth->get_users_groups($user->id)->result();
 			}
 
-			$this->_render_page('auth' . DIRECTORY_SEPARATOR . 'index', $this->data);
+			$this->cleanview('auth' . DIRECTORY_SEPARATOR . 'index', $this->data);
 		}
 	}
 
 	/**
 	 * Log the user in
 	 */
-	public function login()
-	{
+	public function login(){
 		$this->data['title'] = $this->lang->line('login_heading');
 
 		// validate form input
@@ -73,7 +66,7 @@ class Auth extends FrontendController
 				//if the login is successful
 				//redirect them back to the home page
 				$this->session->set_flashdata('message', $this->ion_auth->messages());
-				redirect('/', 'refresh');
+				redirect('/dashboard', 'refresh');
 			}
 			else
 			{
@@ -99,30 +92,26 @@ class Auth extends FrontendController
 				'type' => 'password',
 			);
 
-			$this->_render_page('auth' . DIRECTORY_SEPARATOR . 'login', $this->data);
+			$this->cleanview('auth' . DIRECTORY_SEPARATOR . 'login', $this->data);
 		}
 	}
 
 	/**
 	 * Log the user out
 	 */
-	public function logout()
-	{
+	public function logout(){
 		$this->data['title'] = "Logout";
-
 		// log the user out
 		$logout = $this->ion_auth->logout();
-
 		// redirect them to the login page
 		$this->session->set_flashdata('message', $this->ion_auth->messages());
-		redirect('auth/login', 'refresh');
+		redirect('dashboard/auth/login', 'refresh');
 	}
 
 	/**
 	 * Change password
 	 */
-	public function change_password()
-	{
+	public function change_password(){
 		$this->form_validation->set_rules('old', $this->lang->line('change_password_validation_old_password_label'), 'required');
 		$this->form_validation->set_rules('new', $this->lang->line('change_password_validation_new_password_label'), 'required|min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']|matches[new_confirm]');
 		$this->form_validation->set_rules('new_confirm', $this->lang->line('change_password_validation_new_password_confirm_label'), 'required');

@@ -1,9 +1,7 @@
 <?php (defined('BASEPATH')) OR exit('No direct script access allowed');
 
-class CommonController extends CI_Controller
-{
-    public function __construct()
-    {
+class CommonController extends CI_Controller{
+    public function __construct(){
         parent::__construct();
     }
 
@@ -13,8 +11,7 @@ class CommonController extends CI_Controller
     }
 }
 
-class FrontendController extends CommonController
-{
+class FrontendController extends CommonController{
     public function __construct()
     {
         parent::__construct();
@@ -27,17 +24,21 @@ class FrontendController extends CommonController
     }
 }
 
-class BackendController extends CommonController
-{
-    public function __construct()
-    {
+class BackendController extends CommonController{
+    
+    public function __construct(){
         parent::__construct();
+        $this->load->model('Sidebarmenu_model');
+        if (!$this->ion_auth->logged_in()){
+			redirect('dashboard/auth');
+		}
     }
 
     public function view($template, $data=null){
         $data = (array)$data;
         $data['template'] = $template;
-        $this->load->view('back/'.'layout',(array)$data);
+        $data['sidebar'] = $this->Sidebarmenu_model->getSidebarItems();
+        $this->load->view('layout',(array)$data);
     }
 
     protected function getCrudHTML($table){

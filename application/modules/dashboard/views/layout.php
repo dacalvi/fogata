@@ -11,29 +11,26 @@
     <?php echo assets_css([
         'bower_components/bootstrap/dist/css/bootstrap.min.css',
         'bower_components/font-awesome/css/font-awesome.min.css',
-        'bower_components/Ionicons/css/ionicons.min.css'
-    ]); ?>
-
-    <?php echo assets_css([
+        'bower_components/Ionicons/css/ionicons.min.css',
         'dist/css/AdminLTE.min.css',
         'dist/css/skins/skin-blue.min.css',
         'dist/css/fogata_custom.css'
-        ]); ?>
+    ]); ?>
 
     <?php 
-    foreach($css_files as $file): ?>
+    if(isset($js_files)):  foreach($css_files as $file): ?>
     <link type="text/css" rel="stylesheet" href="<?php echo $file; ?>" />
-    <?php endforeach; ?>
+    <?php endforeach; endif;?>
 
-  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-  <!--[if lt IE 9]>
-  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-  <![endif]-->
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
 
-  <!-- Google Font -->
-  <link rel="stylesheet"
+    <!-- Google Font -->
+    <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
 </head>
 
@@ -44,7 +41,7 @@
   <header class="main-header">
 
     <!-- Logo -->
-    <a href="index2.html" class="logo">
+    <a href="<?php echo base_url();?>dashboard" class="logo">
       <!-- mini logo for sidebar mini 50x50 pixels -->
       <span class="logo-mini">
         <?php echo $this->config->item('logo_mini'); ?>
@@ -163,21 +160,21 @@
           </li>
           <!-- User Account Menu -->
           <li class="dropdown user user-menu">
+            <?php $user = $this->ion_auth->user()->row(); ?>
             <!-- Menu Toggle Button -->
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <!-- The user image in the navbar-->
-              <?php echo assets_img('/dist/img/user2-160x160.jpg', ['class'=>'user-image', 'alt'=>'User Image']);?>
+              <img src="https://ui-avatars.com/api/?name=<?php echo $user->first_name;?>+<?php echo $user->last_name;?>" class='user-image' alt="User Image">
               <!-- hidden-xs hides the username on small devices so only the image appears. -->
-              <span class="hidden-xs">Alexander Pierce</span>
+              <span class="hidden-xs"><?php echo $user->first_name;?> <?php echo $user->last_name;?></span>
             </a>
             <ul class="dropdown-menu">
               <!-- The user image in the menu -->
               <li class="user-header">
-                
-                <?php echo assets_img('/dist/img/user2-160x160.jpg', ['class'=>'img-circle', 'alt'=>'User Image']);?>
+                <img src="https://ui-avatars.com/api/?name=<?php echo $user->first_name;?>+<?php echo $user->last_name;?>" class='img-circle' alt="User Image">
                 <p>
-                  Alexander Pierce - Web Developer
-                  <small>Member since Nov. 2012</small>
+                  <?php echo $user->first_name;?> <?php echo $user->last_name;?>
+                  <small>Miembro desde <?php echo $user->created_on;?></small>
                 </p>
               </li>
               <!-- Menu Body -->
@@ -201,7 +198,7 @@
                   <a href="#" class="btn btn-default btn-flat">Profile</a>
                 </div>
                 <div class="pull-right">
-                  <a href="#" class="btn btn-default btn-flat">Sign out</a>
+                  <a href="<?php echo base_url();?>dashboard/auth/logout" class="btn btn-default btn-flat">Sign out</a>
                 </div>
               </li>
             </ul>
@@ -223,10 +220,12 @@
       <!-- Sidebar user panel (optional) -->
       <div class="user-panel">
         <div class="pull-left image">
-            <?php echo assets_img('/dist/img/user2-160x160.jpg', ['class'=>'img-circle', 'alt'=>'User Image']);?>
+            <img src="https://ui-avatars.com/api/?name=<?php echo $user->first_name;?>+<?php echo $user->last_name;?>" class='img-circle' alt="User Image">
+            
         </div>
         <div class="pull-left info">
-          <p>Alexander Pierce</p>
+          <?php $user = $this->ion_auth->user()->row(); ?>
+          <p><?php echo $user->first_name;?> <?php echo $user->last_name;?></p>
           <!-- Status -->
           <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
         </div>
@@ -244,25 +243,8 @@
       </form>
       <!-- /.search form -->
 
-      <!-- Sidebar Menu -->
-      <ul class="sidebar-menu" data-widget="tree">
-        <li class="header">HEADER</li>
-        <!-- Optionally, you can add icons to the links -->
-        <li class="active"><a href="#"><i class="fa fa-link"></i> <span>Link</span></a></li>
-        <li><a href="#"><i class="fa fa-link"></i> <span>Another Link</span></a></li>
-        <li class="treeview">
-          <a href="#"><i class="fa fa-link"></i> <span>Multilevel</span>
-            <span class="pull-right-container">
-                <i class="fa fa-angle-left pull-right"></i>
-              </span>
-          </a>
-          <ul class="treeview-menu">
-            <li><a href="#">Link in level 2</a></li>
-            <li><a href="#">Link in level 2</a></li>
-          </ul>
-        </li>
-      </ul>
-      <!-- /.sidebar-menu -->
+      <?php $this->load->view('sidebar_menu');?>
+      
     </section>
     <!-- /.sidebar -->
   </aside>
@@ -271,14 +253,19 @@
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
-      <h1>
-        Page Header
-        <small>Optional description</small>
+      
+    <h1>
+        <?php echo $page_header ?? '';?>
+        <small><?php echo $page_description ?? '';?></small>
       </h1>
+
+      <?php if($page_breadcrumb ?? false):?>
       <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
         <li class="active">Here</li>
       </ol>
+      <?php endif;?>
+
     </section>
 
     <!-- Main content -->
@@ -389,10 +376,9 @@
 
 
 
-<?php foreach($js_files as $file): ?>
- 
+<?php if(isset($js_files)): foreach($js_files as $file): ?>
     <script src="<?php echo $file; ?>"></script>
-<?php endforeach; ?>
+<?php endforeach; endif;?>
 
 <!-- Optionally, you can add Slimscroll and FastClick plugins.
      Both of these plugins are recommended to enhance the
